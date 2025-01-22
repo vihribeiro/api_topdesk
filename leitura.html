@@ -11,10 +11,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
             height: 100vh;
             margin: 0;
             box-sizing: border-box;
-            flex-direction: column;
         }
         .container {
             background: #ffffff;
@@ -36,6 +36,7 @@
         }
         #reader {
             width: 300px;
+            display: none;
             margin-bottom: 20px;
         }
         button {
@@ -53,6 +54,7 @@
 </head>
 <body>
     <h2>Read QR Code</h2>
+    <button id="startButton" onclick="startQrScanner()">Start QR Code Scanner</button>
     <div id="reader"></div>
     <div class="container">
         <input type="text" id="equipamento" placeholder="Equipamento" readonly>
@@ -66,6 +68,9 @@
 
     <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
     <script>
+        let html5QrCode;
+        let isScanning = false;
+
         function onScanSuccess(decodedText) {
             try {
                 // Parse the JSON data from the QR code
@@ -81,6 +86,8 @@
                 document.getElementById('nome_rede').value = data.nomeRede || '';
 
                 alert('QR Code successfully scanned!');
+
+                stopQrScanner();
             } catch (error) {
                 alert('Invalid QR Code data.');
             }
@@ -90,19 +97,35 @@
             console.warn(`QR Code scan error: ${errorMessage}`);
         }
 
-        // Initialize the QR code reader
-        const html5QrCode = new Html5Qrcode("reader");
-        html5QrCode.start(
-            { facingMode: "environment" }, // Use the rear camera
-            {
-                fps: 10,
-                qrbox: 250,
-            },
-            onScanSuccess,
-            onScanError
-        ).catch(err => {
-            console.error('Unable to start QR Code scanner.', err);
-        });
+        function startQrScanner() {
+            if (!isScanning) {
+                html5QrCode = new Html5Qrcode("reader");
+                document.getElementById('reader').style.display = "block";
+                html5QrCode.start(
+                    { facingMode: "environment" }, // Use the rear camera
+                    {
+                        fps: 10,
+                        qrbox: 250,
+                    },
+                    onScanSuccess,
+                    onScanError
+                ).catch(err => {
+                    console.error('Unable to start QR Code scanner.', err);
+                });
+                isScanning = true;
+            }
+        }
+
+        function stopQrScanner() {
+            if (isScanning && html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    document.getElementById('reader').style.display = "none";
+                    isScanning = false;
+                }).catch(err => {
+                    console.error('Unable to stop QR Code scanner.', err);
+                });
+            }
+        }
     </script>
 </body>
 </html>
