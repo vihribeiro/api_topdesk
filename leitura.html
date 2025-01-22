@@ -7,14 +7,13 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             height: 100vh;
             margin: 0;
-            box-sizing: border-box;
+            background: #f9f9f9;
         }
         .container {
             background: #ffffff;
@@ -23,8 +22,6 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
             width: 300px;
-            margin: 20px 0;
-            box-sizing: border-box;
         }
         input {
             width: calc(100% - 20px);
@@ -32,33 +29,12 @@
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
-            box-sizing: border-box;
-        }
-        #reader {
-            width: 100%;
-            max-width: 300px;
-            display: none;
-            margin-bottom: 20px;
-        }
-        button {
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
         }
     </style>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js" defer></script>
 </head>
 <body>
-    <h2>Read QR Code</h2>
-    <button id="startButton" onclick="startQrScanner()">Start QR Code Scanner</button>
-    <div id="reader"></div>
     <div class="container">
+        <h2>Data from QR Code</h2>
         <input type="text" id="equipamento" placeholder="Equipamento" readonly>
         <input type="text" id="marca" placeholder="Marca" readonly>
         <input type="text" id="modelo" placeholder="Modelo" readonly>
@@ -67,65 +43,30 @@
         <input type="text" id="sala" placeholder="Sala" readonly>
         <input type="text" id="nome_rede" placeholder="Nome da Rede" readonly>
     </div>
+
     <script>
-        let html5QrCode;
-        let isScanning = false;
-
-        function onScanSuccess(decodedText) {
-            try {
-                const data = JSON.parse(decodedText);
-
-                document.getElementById('equipamento').value = data.equipamento || '';
-                document.getElementById('marca').value = data.marca || '';
-                document.getElementById('modelo').value = data.modelo || '';
-                document.getElementById('numero_patrimonio').value = data.numeroPatrimonio || '';
-                document.getElementById('predio').value = data.predio || '';
-                document.getElementById('sala').value = data.sala || '';
-                document.getElementById('nome_rede').value = data.nomeRede || '';
-
-                alert('QR Code successfully scanned!');
-                stopQrScanner();
-            } catch (error) {
-                alert('Invalid QR Code data.');
-            }
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                equipamento: params.get('equipamento') || '',
+                marca: params.get('marca') || '',
+                modelo: params.get('modelo') || '',
+                numeroPatrimonio: params.get('numero_patrimonio') || '',
+                predio: params.get('predio') || '',
+                sala: params.get('sala') || '',
+                nomeRede: params.get('nome_rede') || ''
+            };
         }
 
-        function onScanError(errorMessage) {
-            console.warn(`QR Code scan error: ${errorMessage}`);
-        }
-
-        function startQrScanner() {
-            if (!isScanning) {
-                html5QrCode = new Html5Qrcode("reader");
-                document.getElementById('reader').style.display = "block";
-
-                html5QrCode.start(
-                    { facingMode: "environment" },
-                    {
-                        fps: 10,
-                        qrbox: { width: 250, height: 250 },
-                    },
-                    onScanSuccess,
-                    onScanError
-                ).catch(err => {
-                    alert('Camera permission denied or unavailable.');
-                    console.error('Unable to start QR Code scanner.', err);
-                });
-
-                isScanning = true;
-            }
-        }
-
-        function stopQrScanner() {
-            if (isScanning && html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    document.getElementById('reader').style.display = "none";
-                    isScanning = false;
-                }).catch(err => {
-                    console.error('Unable to stop QR Code scanner.', err);
-                });
-            }
-        }
+        // Preenche os campos com os dados da URL
+        const data = getQueryParams();
+        document.getElementById('equipamento').value = data.equipamento;
+        document.getElementById('marca').value = data.marca;
+        document.getElementById('modelo').value = data.modelo;
+        document.getElementById('numero_patrimonio').value = data.numeroPatrimonio;
+        document.getElementById('predio').value = data.predio;
+        document.getElementById('sala').value = data.sala;
+        document.getElementById('nome_rede').value = data.nomeRede;
     </script>
 </body>
 </html>
