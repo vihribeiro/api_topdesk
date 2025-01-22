@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Read QR Code</title>
+    <title>Leitura QR Code</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-direction: column;
             height: 100vh;
             margin: 0;
-            background: #f9f9f9;
+            box-sizing: border-box;
         }
         .container {
             background: #ffffff;
@@ -22,6 +22,7 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
             width: 300px;
+            box-sizing: border-box;
         }
         input {
             width: calc(100% - 20px);
@@ -29,12 +30,13 @@
             margin: 10px 0;
             border: 1px solid #ccc;
             border-radius: 5px;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Data from QR Code</h2>
+        <h2>Dados do QR Code</h2>
         <input type="text" id="equipamento" placeholder="Equipamento" readonly>
         <input type="text" id="marca" placeholder="Marca" readonly>
         <input type="text" id="modelo" placeholder="Modelo" readonly>
