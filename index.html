@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate QR Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            box-sizing: border-box;
+            position: relative;
+        }
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+            margin: auto;
+            box-sizing: border-box;
+        }
+        input, button {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        #qrBox {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        #closeButton {
+            background-color: #ff4c4c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+        #closeButton:hover {
+            background-color: #cc0000;
+        }
+        .details {
+            text-align: left;
+            margin-top: 20px;
+        }
+        .details p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Generate QR Code</h2>
+        <form id="qrForm">
+            <input type="text" id="equipamento" placeholder="Equipamento" required>
+            <input type="text" id="marca" placeholder="Marca" required>
+            <input type="text" id="modelo" placeholder="Modelo" required>
+            <input type="text" id="numero_patrimonio" placeholder="Número de Patrimônio" required>
+            <input type="text" id="predio" placeholder="Prédio" required>
+            <input type="text" id="sala" placeholder="Sala" required>
+            <input type="text" id="nome_rede" placeholder="Nome da Rede" required>
+            <button type="button" onclick="generateQRCode()">Generate QR Code</button>
+        </form>
+    </div>
+
+    <div id="overlay">
+        <div id="qrBox">
+            <canvas id="qrcodeCanvas"></canvas>
+            <div class="details" id="detailsBox"></div>
+            <button id="closeButton" onclick="closeOverlay()">Close</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script>
+        function generateQRCode() {
+            const equipamento = document.getElementById('equipamento').value;
+            const marca = document.getElementById('marca').value;
+            const modelo = document.getElementById('modelo').value;
+            const numeroPatrimonio = document.getElementById('numero_patrimonio').value;
+            const predio = document.getElementById('predio').value;
+            const sala = document.getElementById('sala').value;
+            const nomeRede = document.getElementById('nome_rede').value;
+
+            if (!equipamento || !marca || !modelo || !numeroPatrimonio || !predio || !sala || !nomeRede) {
+                alert('Please fill in all fields.');
+                return;
+            }
+
+            const qrData = JSON.stringify({
+                equipamento: equipamento,
+                marca: marca,
+                modelo: modelo,
+                numeroPatrimonio: numeroPatrimonio,
+                predio: predio,
+                sala: sala,
+                nomeRede: nomeRede
+            });
+
+            const canvas = document.getElementById('qrcodeCanvas');
+            QRCode.toCanvas(canvas, qrData, { width: 250 }, function (error) {
+                if (error) {
+                    console.error(error);
+                    alert('Failed to generate QR Code.');
+                } else {
+                    document.getElementById('overlay').style.display = 'flex';
+                    const detailsBox = document.getElementById('detailsBox');
+                    detailsBox.innerHTML = `
+                        <p><strong>Equipamento:</strong> ${equipamento}</p>
+                        <p><strong>Marca:</strong> ${marca}</p>
+                        <p><strong>Modelo:</strong> ${modelo}</p>
+                        <p><strong>Número de Patrimônio:</strong> ${numeroPatrimonio}</p>
+                        <p><strong>Prédio:</strong> ${predio}</p>
+                        <p><strong>Sala:</strong> ${sala}</p>
+                        <p><strong>Nome da Rede:</strong> ${nomeRede}</p>
+                    `;
+                }
+            });
+        }
+
+        function closeOverlay() {
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
