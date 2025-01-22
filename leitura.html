@@ -52,6 +52,7 @@
             background-color: #0056b3;
         }
     </style>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js" defer></script>
 </head>
 <body>
     <h2>Read QR Code</h2>
@@ -66,19 +67,14 @@
         <input type="text" id="sala" placeholder="Sala" readonly>
         <input type="text" id="nome_rede" placeholder="Nome da Rede" readonly>
     </div>
-
-    <!-- Script da biblioteca html5-qrcode -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/minified/html5-qrcode.min.js"></script>
     <script>
         let html5QrCode;
         let isScanning = false;
 
-        // Função para processar o QR Code lido
         function onScanSuccess(decodedText) {
             try {
-                const data = JSON.parse(decodedText); // Tenta interpretar os dados como JSON
+                const data = JSON.parse(decodedText);
 
-                // Preenche os campos de texto com os dados do QR Code
                 document.getElementById('equipamento').value = data.equipamento || '';
                 document.getElementById('marca').value = data.marca || '';
                 document.getElementById('modelo').value = data.modelo || '';
@@ -88,49 +84,45 @@
                 document.getElementById('nome_rede').value = data.nomeRede || '';
 
                 alert('QR Code successfully scanned!');
-
-                stopQrScanner(); // Para o scanner após o sucesso
+                stopQrScanner();
             } catch (error) {
                 alert('Invalid QR Code data.');
             }
         }
 
-        // Função para tratar erros durante a leitura
         function onScanError(errorMessage) {
             console.warn(`QR Code scan error: ${errorMessage}`);
         }
 
-        // Inicia o leitor de QR Code
         function startQrScanner() {
             if (!isScanning) {
-                html5QrCode = new Html5Qrcode("reader"); // Cria uma instância do leitor
-                document.getElementById('reader').style.display = "block"; // Mostra o elemento de vídeo
+                html5QrCode = new Html5Qrcode("reader");
+                document.getElementById('reader').style.display = "block";
 
                 html5QrCode.start(
-                    { facingMode: "environment" }, // Tenta usar a câmera traseira
+                    { facingMode: "environment" },
                     {
-                        fps: 10, // Frames por segundo
-                        qrbox: { width: 250, height: 250 }, // Define a área de leitura
+                        fps: 10,
+                        qrbox: { width: 250, height: 250 },
                     },
-                    onScanSuccess, // Função de sucesso
-                    onScanError    // Função de erro
+                    onScanSuccess,
+                    onScanError
                 ).catch(err => {
-                    alert('Erro ao acessar a câmera. Verifique as permissões.');
-                    console.error('Erro ao iniciar o leitor:', err);
+                    alert('Camera permission denied or unavailable.');
+                    console.error('Unable to start QR Code scanner.', err);
                 });
 
                 isScanning = true;
             }
         }
 
-        // Para o leitor de QR Code
         function stopQrScanner() {
             if (isScanning && html5QrCode) {
                 html5QrCode.stop().then(() => {
-                    document.getElementById('reader').style.display = "none"; // Esconde o elemento de vídeo
+                    document.getElementById('reader').style.display = "none";
                     isScanning = false;
                 }).catch(err => {
-                    console.error('Erro ao parar o leitor:', err);
+                    console.error('Unable to stop QR Code scanner.', err);
                 });
             }
         }
