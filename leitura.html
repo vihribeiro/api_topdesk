@@ -35,7 +35,8 @@
             box-sizing: border-box;
         }
         #reader {
-            width: 300px;
+            width: 100%;
+            max-width: 300px;
             display: none;
             margin-bottom: 20px;
         }
@@ -73,10 +74,7 @@
 
         function onScanSuccess(decodedText) {
             try {
-                // Parse the JSON data from the QR code
                 const data = JSON.parse(decodedText);
-
-                // Fill the input fields with the data
                 document.getElementById('equipamento').value = data.equipamento || '';
                 document.getElementById('marca').value = data.marca || '';
                 document.getElementById('modelo').value = data.modelo || '';
@@ -84,9 +82,7 @@
                 document.getElementById('predio').value = data.predio || '';
                 document.getElementById('sala').value = data.sala || '';
                 document.getElementById('nome_rede').value = data.nomeRede || '';
-
                 alert('QR Code successfully scanned!');
-
                 stopQrScanner();
             } catch (error) {
                 alert('Invalid QR Code data.');
@@ -102,14 +98,15 @@
                 html5QrCode = new Html5Qrcode("reader");
                 document.getElementById('reader').style.display = "block";
                 html5QrCode.start(
-                    { facingMode: "environment" }, // Use the rear camera
+                    { facingMode: { exact: "environment" } }, // Explicitly request rear camera
                     {
                         fps: 10,
-                        qrbox: 250,
+                        qrbox: { width: 250, height: 250 },
                     },
                     onScanSuccess,
                     onScanError
                 ).catch(err => {
+                    alert('Camera permission denied or unavailable.');
                     console.error('Unable to start QR Code scanner.', err);
                 });
                 isScanning = true;
